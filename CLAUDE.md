@@ -29,7 +29,7 @@ Layout follows a friend's site, https://gingerschultheis.github.io/: one page, n
 ## Design rules (keep these)
 
 - Monospace font stack starting with Menlo, left-aligned. The intro puts the text on the left and the photo (natural aspect ratio) on the right; on phones the photo moves above the text.
-- Page title "Tommy Alford" in the `<h1>` at 20pt. No divider lines between sections.
+- Page title "Tommy Alford" in the `<h1>` at 18pt. Base font size is 14.4px on desktop and 13.5px on phones (a deliberate 10% scale-down; everything else is sized in `rem`/`ch` so it scales with it). No divider lines between sections.
 - Light mode only. Dark mode is deliberately disabled for now. To bring it back, add a `@media (prefers-color-scheme: dark)` block that overrides the CSS variables in `:root`, set `color-scheme: light dark` in `:root` and in the `<meta name="color-scheme">` tag in `index.html`, and restore the dark variant in `assets/favicon.svg` (all three are in git history, commit `e953d48`). No toggle.
 - No JavaScript, no frameworks, no web fonts, no external requests.
 - Keep it fast and readable on a phone.
