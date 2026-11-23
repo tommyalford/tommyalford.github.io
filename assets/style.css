@@ -1,21 +1,11 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --bg: #fbfbf9;
   --fg: #1b1b1a;
   --muted: #62625d;
   --accent: #1f5fbf;
   --rule: #dcdcd5;
   --font: Menlo, ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #121212;
-    --fg: #e6e6e1;
-    --muted: #9b9b94;
-    --accent: #86b4ff;
-    --rule: #2d2d2b;
-  }
 }
 
 * { box-sizing: border-box; }

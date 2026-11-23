@@ -8,7 +8,7 @@ Almost everything is written directly in `index.html`. The one exception is the 
 
 ```
 index.html              the whole site: intro and photo, Research, Publications
-assets/style.css        styling (light + dark mode)
+assets/style.css        styling (light mode only for now)
 build_pubs.py           fills the publication list in index.html from the .bib file
 content/
   publications.bib      publication list
