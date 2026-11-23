@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
-"""Regenerate the content-driven parts of the site from content/.
+"""Regenerate the publication list in index.html from content/publications.bib.
 
-    python3 build.py
+    python3 build_pubs.py
 
-Fills the regions between <!-- BEGIN:name --> and <!-- END:name --> markers:
-    index.html         intro, bio, links     <- content/profile.txt, content/bio.txt
-    research.html      research              <- content/research-summary.txt
-    publications.html  pubs                  <- content/publications.bib
-    contact.html       contact               <- content/profile.txt
-
-Everything else in the HTML files is hand-written and left alone.
+Replaces everything between <!-- BEGIN:pubs --> and <!-- END:pubs --> in index.html.
 Standard library only (Python 3.8+).
 """
 import html
@@ -18,10 +12,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-CONTENT = ROOT / "content"
 HIGHLIGHT_LAST_NAMES = {"alford"}          # surnames to bold in author lists
 HIGHLIGHT_NOTE_RE = re.compile(r"\bT\. Alford\b")
-TODOS = []
 
 GROUPS = [
     ("selected", "Selected publications",
@@ -34,110 +26,8 @@ GROUPS = [
 ]
 
 
-# ---------------------------------------------------------------- text helpers
-
 def esc(s):
     return html.escape(s, quote=True)
-
-
-def inline(s):
-    """Escape, then apply **bold**, *italic*, and [text](url)."""
-    s = esc(s)
-    s = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+|mailto:[^)\s]+)\)", r'<a href="\2">\1</a>', s)
-    s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
-    s = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<em>\1</em>", s)
-    return s
-
-
-def read_text(name):
-    """Read a content file, dropping '# comment' lines (but not '## heading' lines)."""
-    path = CONTENT / name
-    lines = path.read_text(encoding="utf-8").splitlines()
-    return [ln for ln in lines if not re.match(r"#(\s|$)", ln)]
-
-
-def text_to_html(lines):
-    """Paragraphs separated by blank lines; '## ' starts a heading; single newlines become <br>."""
-    out, para = [], []
-
-    def flush():
-        if para:
-            out.append("<p>" + "<br>\n".join(inline(p) for p in para) + "</p>")
-            para.clear()
-
-    for ln in lines:
-        if ln.startswith("## "):
-            flush()
-            out.append("<h2>" + inline(ln[3:].strip()) + "</h2>")
-        elif not ln.strip():
-            flush()
-        else:
-            para.append(ln.strip())
-    flush()
-    return "\n".join(out)
-
-
-def todo(label):
-    TODOS.append(label)
-    return '<span class="todo">[TODO: %s]</span>' % esc(label)
-
-
-# --------------------------------------------------------------------- profile
-
-def read_profile():
-    prof, links = {}, []
-    for ln in read_text("profile.txt"):
-        if ":" not in ln or not ln.strip():
-            continue
-        key, _, val = ln.partition(":")
-        key, val = key.strip(), val.strip()
-        if key.startswith("link."):
-            links.append((key[5:].strip(), val))
-        else:
-            prof[key] = val
-    return prof, links
-
-
-def link_html(label, url):
-    return '<a href="%s">%s</a>' % (esc(url), esc(label)) if url else todo("%s link" % label)
-
-
-def build_intro(prof):
-    parts = [prof.get("title") or None, prof.get("affiliation") or None]
-    line = ", ".join(esc(p) for p in parts if p)
-    if not line:
-        line = todo("title / affiliation")
-    out = ['<p class="affil">%s</p>' % line]
-    if prof.get("advisor"):
-        out.append('<p class="affil">Advisor: %s</p>' % inline(prof["advisor"]))
-    return "\n".join(out)
-
-
-def build_bio():
-    return text_to_html(read_text("bio.txt"))
-
-
-def build_links(prof, links):
-    items = []
-    email = prof.get("email")
-    items.append('<a href="mailto:%s">email</a>' % esc(email) if email else todo("email"))
-    items.append('<a href="cv.html">CV</a>')
-    items += [link_html(label, url) for label, url in links]
-    return '<ul class="links">\n' + "\n".join("  <li>%s</li>" % i for i in items) + "\n</ul>"
-
-
-def build_contact(prof, links):
-    rows = []
-    email = prof.get("email")
-    rows.append(("email", '<a href="mailto:%s">%s</a>' % (esc(email), esc(email)) if email else todo("email")))
-    if prof.get("affiliation"):
-        rows.append(("affiliation", esc(prof["affiliation"])))
-    rows.append(("address", "<br>".join(esc(p.strip()) for p in prof["address"].split("|"))
-                 if prof.get("address") else todo("address")))
-    for label, url in links:
-        rows.append((label.lower(), link_html(label, url) if not url else
-                     '<a href="%s">%s</a>' % (esc(url), esc(re.sub(r"^https?://(www\.)?", "", url).rstrip("/")))))
-    return '<dl class="kv">\n' + "\n".join("  <dt>%s</dt>\n  <dd>%s</dd>" % (esc(k), v) for k, v in rows) + "\n</dl>"
 
 
 # ---------------------------------------------------------------------- BibTeX
@@ -279,7 +169,7 @@ def format_entry(entry):
 
 
 def build_pubs():
-    entries = parse_bib((CONTENT / "publications.bib").read_text(encoding="utf-8"))
+    entries = parse_bib((ROOT / "content" / "publications.bib").read_text(encoding="utf-8"))
     out, seen = [], set()
     for cat, heading, blurb in GROUPS:
         group = [e for e in entries if e.get("category", "").lower() == cat]
@@ -287,10 +177,10 @@ def build_pubs():
         seen.update(e["key"] for e in group)
         if not group:
             continue
-        out.append("<section>\n  <h2>%s</h2>" % esc(heading))
+        out.append("<h3>%s</h3>" % esc(heading))
         if blurb:
-            out.append('  <p class="blurb">%s</p>' % esc(blurb))
-        out.append('  <ul class="pubs">\n' + "\n".join(format_entry(e) for e in group) + "\n  </ul>\n</section>")
+            out.append('<p class="blurb">%s</p>' % esc(blurb))
+        out.append('<ul class="pubs">\n' + "\n".join(format_entry(e) for e in group) + "\n</ul>")
     for e in entries:
         if e["key"] not in seen:
             print("warning: %s has no recognised category and was skipped" % e["key"], file=sys.stderr)
@@ -298,29 +188,15 @@ def build_pubs():
     return "\n".join(out), len(entries)
 
 
-# --------------------------------------------------------------------- writing
-
-def fill(page, name, new):
-    path = ROOT / page
-    src = path.read_text(encoding="utf-8")
-    pat = re.compile(r"(<!-- BEGIN:%s -->)(.*?)(<!-- END:%s -->)" % (name, name), re.S)
-    if not pat.search(src):
-        sys.exit("error: %s is missing <!-- BEGIN:%s --> ... <!-- END:%s -->" % (page, name, name))
-    path.write_text(pat.sub(lambda m: "%s\n%s\n%s" % (m.group(1), new, m.group(3)), src, count=1), encoding="utf-8")
-
-
 def main():
-    prof, links = read_profile()
-    fill("index.html", "intro", build_intro(prof))
-    fill("index.html", "bio", build_bio())
-    fill("index.html", "links", build_links(prof, links))
-    fill("research.html", "research", text_to_html(read_text("research-summary.txt")))
-    fill("contact.html", "contact", build_contact(prof, links))
+    path = ROOT / "index.html"
+    src = path.read_text(encoding="utf-8")
+    pat = re.compile(r"(<!-- BEGIN:pubs -->)(.*?)(<!-- END:pubs -->)", re.S)
+    if not pat.search(src):
+        sys.exit("error: index.html is missing <!-- BEGIN:pubs --> ... <!-- END:pubs -->")
     pubs, n = build_pubs()
-    fill("publications.html", "pubs", pubs)
-    print("built 4 pages from content/ (%d publications)" % n)
-    if TODOS:
-        print("still missing in content/profile.txt: " + ", ".join(sorted(set(TODOS))))
+    path.write_text(pat.sub(lambda m: "%s\n%s\n%s" % (m.group(1), pubs, m.group(3)), src, count=1), encoding="utf-8")
+    print("updated index.html with %d publications" % n)
 
 
 if __name__ == "__main__":

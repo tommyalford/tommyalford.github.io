@@ -1,48 +1,44 @@
 # tommyalford.github.io
 
-Tommy Alford's personal academic website. Plain HTML and CSS, hosted on GitHub Pages, with no frameworks and no JavaScript.
+Tommy Alford's personal academic website. A single page of plain HTML and CSS, hosted on GitHub Pages, with no frameworks and no JavaScript.
 
-All the text lives in `content/`. A small script, `build.py`, copies it into the HTML pages. You never edit the generated parts of the HTML by hand.
+Almost everything is written directly in `index.html`. The one exception is the publication list, which a small script, `build_pubs.py`, generates from `content/publications.bib`.
 
 ## Repo layout
 
 ```
-index.html research.html publications.html cv.html contact.html   the pages
-assets/style.css                                                  styling (light + dark mode)
-build.py                                                          fills pages from content/
+index.html              the whole site: intro and photo, Research, Publications
+assets/style.css        styling (light + dark mode)
+build_pubs.py           fills the publication list in index.html from the .bib file
 content/
   publications.bib      publication list
-  bio.txt               bio on the home page
-  profile.txt           title, advisor, email, address, profile links
-  research-summary.txt  Research page text
-  cv.pdf                CV
+  cv.pdf                CV (linked from the "CV" link)
   headshot.jpg          photo
 ```
 
 ## Updating the website
 
-You need Python 3.8 or newer, which is already on a Mac. There is nothing to install. The routine is always the same: edit a file in `content/`, run `python3 build.py`, preview, then commit and push.
+You need Python 3.8 or newer, which is already on a Mac. There is nothing to install.
 
 ### Add a publication
 
 1. Open `content/publications.bib` and add an entry, copying an existing one as a template. Set `category` to `selected`, `collaboration` or `undergraduate`.
 2. Write authors as `Last, F. and Last, F.`. Include `Alford, T.` to have the name bolded. For big collaboration papers where he isn't listed individually, use `Lead, A. and others` and add `note = {Including T. Alford}`.
 3. Add `eprint = {...}` for an arXiv ID, which gives the arXiv and PDF links. Add `doi = {...}` or `url = {...}` if you have them. The comment line above each entry shows where those go.
-4. Run `python3 build.py`.
+4. Run `python3 build_pubs.py`. It rewrites the publication list inside `index.html`.
 
 ### Update the CV
 
 Replace `content/cv.pdf` with the new file, keeping the name `cv.pdf`. No build step is needed. If you still see the old version, hard-refresh the browser.
 
-### Change the bio, contact details, or links
+### Change the bio, links, or research text
 
-- Bio: edit `content/bio.txt`. Separate paragraphs with a blank line.
-- Email, advisor, address, and links to INSPIRE, Google Scholar, ORCID, arXiv and GitHub: edit `content/profile.txt`. Anything left empty shows up on the site as a yellow `[TODO]` marker, so you can spot what is missing.
-- Then run `python3 build.py`.
+Open `index.html` and edit the text directly. No build step is needed.
 
-### Replace the research text
-
-Edit `content/research-summary.txt`. It currently holds placeholder verse. Start a section with `## Heading`, and separate paragraphs with a blank line. Then run `python3 build.py`.
+- **Affiliation, advisor and bio:** the lines at the top, next to the photo.
+- **Links (email, CV, GitHub):** the list under the bio. To add one, copy an existing `<li>` line and change the URL and label.
+- **Research:** the `Research` section. It currently holds placeholder verse. Replace it with real text, using `<h3>` for subheadings and `<p>` for paragraphs.
+- Don't edit between `<!-- BEGIN:pubs -->` and `<!-- END:pubs -->`. The script overwrites that part.
 
 ### Change the photo
 
