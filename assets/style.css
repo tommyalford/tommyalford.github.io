@@ -1,10 +1,10 @@
 :root {
   color-scheme: light;
-  --bg: #fbfbf9;
+  --bg: #faf8f0;
   --fg: #1b1b1a;
   --muted: #62625d;
   --accent: #1f5fbf;
-  --rule: #dcdcd5;
+  --rule: #e0dbcf;
   --font: Menlo, ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
 }
 
