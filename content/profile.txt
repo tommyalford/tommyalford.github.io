@@ -11,7 +11,7 @@ email: tdalford1@gmail.com
 # Profile links: "link.<Label>: <url>". They appear in this order on the
 # Home and Contact pages. Delete a line to remove a link, or add your own.
 link.INSPIRE:
-link.Google Scholar:
-link.ORCID:
-link.arXiv:
+# link.Google Scholar:
+# link.ORCID:
+# link.arXiv:
 link.GitHub:https://github.com/tdalford

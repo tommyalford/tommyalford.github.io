@@ -81,7 +81,7 @@ Replace `content/cv.pdf` with the new PDF, keeping the same filename. No build i
 - **Headshot:** replace `content/headshot.jpg`, then regenerate the two resized copies:
   `sips --resampleWidth 400 -s formatOptions 80 content/headshot.jpg --out assets/headshot-400.jpg`
   `sips --resampleWidth 800 -s formatOptions 80 content/headshot.jpg --out assets/headshot-800.jpg`
-  If the new aspect ratio is not about 3:4, update `width`/`height` on the `<img>` in `index.html` and `aspect-ratio` in `.headshot` in `style.css`.
+  The photo is shown at its natural aspect ratio (no cropping). If the new ratio differs from about 3:4, update `width`/`height` on the `<img>` in `index.html` to the resized dimensions.
 
 ## Preview and deploy
 
