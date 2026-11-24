@@ -21,7 +21,7 @@ html {
 
 body {
   margin: 0 auto;
-  padding: 1.25rem 1.25rem 3rem;
+  padding: calc(1.25rem + 20px) 1.25rem 3rem;
   max-width: calc(72ch + 16.5rem);
   background: var(--bg);
   color: var(--fg);
