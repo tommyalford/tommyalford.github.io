@@ -13,7 +13,7 @@ build_pubs.py           fills the publication list in index.html from the .bib f
 content/
   publications.bib      publication list
   cv.pdf                CV (linked from the "CV" link)
-  headshot.jpg          photo
+  headshot.png          photo
 ```
 
 ## Updating the website
@@ -42,12 +42,14 @@ Open `index.html` and edit the text directly. No build step is needed.
 
 ### Change the photo
 
-Replace `content/headshot.jpg`, then make the two smaller copies the site uses:
+Replace `content/headshot.png`, then make the two smaller copies the site uses:
 
 ```
-sips --resampleWidth 400 -s formatOptions 80 content/headshot.jpg --out assets/headshot-400.jpg
-sips --resampleWidth 800 -s formatOptions 80 content/headshot.jpg --out assets/headshot-800.jpg
+sips --resampleWidth 400 -s format png content/headshot.png --out assets/headshot-400.png
+sips --resampleWidth 800 -s format png content/headshot.png --out assets/headshot-800.png
 ```
+
+Then check the `width` and `height` on the `<img>` in `index.html` match the 400px copy (run `sips -g pixelWidth -g pixelHeight assets/headshot-400.png`).
 
 ### Preview locally
 

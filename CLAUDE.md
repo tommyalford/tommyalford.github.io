@@ -11,12 +11,12 @@ index.html              the whole site: intro + photo, Research, Publications
 assets/
   style.css             all styling, light and dark
   favicon.svg
-  headshot-400.jpg, -800.jpg   resized copies of content/headshot.jpg
+  headshot-400.png, -800.png   resized copies of content/headshot.png
 build_pubs.py           regenerates the publication list in index.html (stdlib Python 3.8+)
 content/
   publications.bib      SOURCE OF TRUTH for the publication list
   cv.pdf                linked from the "CV" link in index.html
-  headshot.jpg          original photo
+  headshot.png          original photo
 .nojekyll
 ```
 
@@ -30,7 +30,7 @@ Layout follows a friend's site, https://gingerschultheis.github.io/: one page, n
 
 - Monospace font stack starting with Menlo, left-aligned. The intro puts the text on the left and the photo (natural aspect ratio) on the right; on phones the photo moves above the text.
 - Page title "Tommy Alford" in the `<h1>` at 18pt. Base font size is 14.4px on desktop and 13.5px on phones (a deliberate 10% scale-down; everything else is sized in `rem`/`ch` so it scales with it). No divider lines between sections.
-- Light mode only. Dark mode is deliberately disabled for now. To bring it back, add a `@media (prefers-color-scheme: dark)` block that overrides the CSS variables in `:root`, set `color-scheme: light dark` in `:root` and in the `<meta name="color-scheme">` tag in `index.html`, and restore the dark variant in `assets/favicon.svg` (all three are in git history, commit `e953d48`). No toggle.
+- Light mode only. Dark mode is deliberately disabled for now. To bring it back, add a `@media (prefers-color-scheme: dark)` block that overrides the CSS variables in `:root`, set `color-scheme: light dark` in `:root` and in the `<meta name="color-scheme">` tag in `index.html` (the old dark CSS is in git history, commit `e953d48`). No toggle.
 - No JavaScript, no frameworks, no web fonts, no external requests.
 - Keep it fast and readable on a phone.
 
@@ -78,9 +78,9 @@ Replace `content/cv.pdf` with the new PDF, keeping the same filename. No build i
 - **Affiliation, advisor, bio:** the `<p class="affil">` lines and the paragraph below them in the `.intro` block. The bio is still "lorem ipsum".
 - **Links row:** the `<ul class="links">` list. To add a link (INSPIRE, Google Scholar, ORCID, arXiv...), add `<li><a href="URL">Label</a></li>`. Don't add a link with an empty or made-up URL.
 - **Research section:** `<section id="research">`. It currently contains placeholder Seuss-style verse (an HTML comment above it says so) that the user plans to replace. Use `<h3>` for subheadings and `<p>` for paragraphs.
-- **Headshot:** replace `content/headshot.jpg`, then regenerate the two resized copies:
-  `sips --resampleWidth 400 -s formatOptions 80 content/headshot.jpg --out assets/headshot-400.jpg`
-  `sips --resampleWidth 800 -s formatOptions 80 content/headshot.jpg --out assets/headshot-800.jpg`
+- **Headshot:** replace `content/headshot.png`, then regenerate the two resized copies:
+  `sips --resampleWidth 400 -s format png content/headshot.png --out assets/headshot-400.png`
+  `sips --resampleWidth 800 -s format png content/headshot.png --out assets/headshot-800.png`
   The photo is shown at its natural aspect ratio (no cropping). If the new ratio differs from about 3:4, update `width`/`height` on the `<img>` in `index.html` to the resized dimensions.
 
 ## Preview and deploy
